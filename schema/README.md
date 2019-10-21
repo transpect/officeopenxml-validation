@@ -2,7 +2,7 @@ Source of the RNC files: https://www.ecma-international.org/publications/standar
 Converted to rng with 'trang' (version from 2009/11).
 
 COPYRIGHT NOTICE
-©2016> Ecma International
+©2019 Ecma International
 This document may be copied, published and distributed to others, and certain derivative works of it may be prepared, copied, published, and distributed, in whole or in part, provided that the above copyright notice and this Copyright License and Disclaimer are included on all such copies and derivative works. The only derivative works that are permissible under this Copyright License and Disclaimer are:
 (i)    works which incorporate all or portion of this document for the purpose of providing commentary or explanation (such as an annotated version of the document),
 (ii)    works which incorporate all or portion of this document for the purpose of incorporating features that provide accessibility,
