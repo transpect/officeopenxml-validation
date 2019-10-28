@@ -67,7 +67,7 @@
             <xsl:param name="base-uri"/>
             <xsl:param name="debug"/>
             <xsl:template match="/c:file">
-              <c:result>
+              <c:result abs-file-path="{$base-uri}/{@name}">
                 <xsl:variable name="rng-file" as="xs:string">
                   <xsl:choose>
                     <xsl:when test="@name = 'word/styles.xml'">WordprocessingML_Style_Definitions.rng</xsl:when>
@@ -99,15 +99,15 @@
           </xsl:stylesheet>
         </p:inline>
       </p:input>
-      <p:with-param name="base-uri" select="base-uri()"/>
+      <p:with-param name="base-uri" select="base-uri()">
+        <p:pipe step="unzip" port="result"/>
+      </p:with-param>
       <p:with-param name="debug" select="$debug"/>
       <p:input port="parameters"><p:empty/></p:input>
     </p:xslt>
 
     <p:load name="load">
-      <p:with-option name="href" select="resolve-uri(/c:file/@name, base-uri())">
-        <p:pipe step="val-components" port="current"/>
-      </p:with-option>
+      <p:with-option name="href" select="/*/@abs-file-path"/>
     </p:load>
 
     <tr:validate-with-rng-sch name="val-component">
