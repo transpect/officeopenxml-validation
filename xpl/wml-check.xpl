@@ -55,7 +55,7 @@
                      @name, 
                      $validate-only-regex
                    ) else true()
-                  ][not(matches(@name, 'Content_Types|word/(people|commentsEx)|docProps/(app|core).xml|docProps/custom.xml|.rels'))]" />
+                  ][not(matches(@name, 'Content_Types|word/(media|embeddings|people|commentsEx)|docProps/(app|core).xml|docProps/custom.xml|.rels'))]" />
     <p:output port="result" primary="true">
       <p:pipe step="val-component" port="text" />
     </p:output>
