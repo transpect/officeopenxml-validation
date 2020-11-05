@@ -55,7 +55,20 @@
                      @name, 
                      $validate-only-regex
                    ) else true()
-                  ][not(matches(@name, 'Content_Types|customUI/|word/(.*\.bin|commentsEx|customizations|embeddings|media|people|vbaData)|docProps/(app|core).xml|docProps/custom.xml|.rels'))]" />
+                  ][not(
+                      matches(
+                        @name, 
+                        ' Content_Types
+                        | word/(.*\.bin|commentsEx|customizations|embeddings|media|people|vbaData)
+                        | docProps/(app|core).xml
+                        | docProps/custom.xml
+                        | customUI/
+                        | customXml/_rels/
+                        | _rels/(settings\.xml)?\.rels',
+                        'x'
+                      )
+                    )
+                  ]"/>
     <p:output port="result" primary="true">
       <p:pipe step="val-component" port="text" />
     </p:output>
@@ -84,6 +97,7 @@
                     <xsl:when test="starts-with(@name, 'word/footer')">WordprocessingML_Footer.rng</xsl:when>
                     <xsl:when test="starts-with(@name, 'word/theme/theme')">DrawingML_Theme.rng</xsl:when>
                     <xsl:when test="@name = 'word/webSettings.xml'">WordprocessingML_Web_Settings.rng</xsl:when>
+                    <xsl:when test="@name = 'word/_rels/document.xml.rels'">document.xml.rels.sch.xml</xsl:when>
                     <xsl:otherwise>
                       _unknown_
                       <xsl:message select="'ERROR: unknown file', xs:string(@name), 'for determining RNG schema file.&#xa;'" terminate="no"/>
@@ -144,9 +158,8 @@
               <svrl:active-pattern id="contentchecker_results" name="contentchecker_results"/>
               <svrl:fired-rule context="*[@srcpath]"/>
               <xsl:if test="not($single-reports/*)">
-                <svrl:successful-report test="true()" id="{$container-file}" role="info">
+                <svrl:successful-report test="true()" id="{$container-file}" role="info" location="BC_orphans">
                   <svrl:text>
-                    <span class="srcpath" xmlns="http://www.w3.org/1999/xhtml">BC_orphans</span>
                     Schema validation summary of <xsl:value-of select="count(rng-sch-validation-report)"/> container files in <xsl:value-of select="$container-file"/> went fine.
                     <br xmlns="http://www.w3.org/1999/xhtml"/>
                     <br xmlns="http://www.w3.org/1999/xhtml"/>
@@ -169,9 +182,13 @@
                                                   else 
                                                     if(matches(., $projectspecific-exclusion_regex)) 
                                                     then false() else true()]">
-              <svrl:successful-report test="true()" role="warning" id="{$report-family-prefix}-{$id-suffix}">
+              <xsl:variable name="role" as="xs:string"
+                select="if(contains(., 'element &quot;w:p&quot; not allowed here')) 
+                        then 'error'
+                        else 'warning'"/>
+              <svrl:successful-report test="true()" role="{$role}" location="BC_orphans"
+                id="{$report-family-prefix}-{$id-suffix}{if($role = 'error') then '-critical' else ''}">
                 <svrl:text>
-                  <span class="srcpath" xmlns="http://www.w3.org/1999/xhtml">BC_orphans</span>
                   <!-- example line:
                   1:1611:org.xml.sax.SAXParseException; systemId: file:/var/autofs/data/sandbox/pglatza/vde-transpect/test/sts2dke/list_array/list-array_de.xml.docx.tmp/word/document.xml; lineNumber: 1; columnNumber: 1611; attribute "mc:Ignorable" not allowed here; expected attribute "w:conformance" -->
                   <br xmlns="http://www.w3.org/1999/xhtml"/>
