@@ -64,6 +64,7 @@
                         | docProps/custom.xml
                         | customUI/
                         | customXml/_rels/
+                        | word/_rels/document.xml.rels
                         | _rels/(settings\.xml)?\.rels',
                         'x'
                       )
@@ -97,7 +98,7 @@
                     <xsl:when test="starts-with(@name, 'word/footer')">WordprocessingML_Footer.rng</xsl:when>
                     <xsl:when test="starts-with(@name, 'word/theme/theme')">DrawingML_Theme.rng</xsl:when>
                     <xsl:when test="@name = 'word/webSettings.xml'">WordprocessingML_Web_Settings.rng</xsl:when>
-                    <xsl:when test="@name = 'word/_rels/document.xml.rels'">document.xml.rels.sch.xml</xsl:when>
+                    <!--<xsl:when test="@name = 'word/_rels/document.xml.rels'">document.xml.rels.sch.xml</xsl:when>-->
                     <xsl:otherwise>
                       _unknown_
                       <xsl:message select="'ERROR: unknown file', xs:string(@name), 'for determining RNG schema file.&#xa;'" terminate="no"/>
