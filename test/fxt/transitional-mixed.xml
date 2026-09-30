@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Transitional (schemas.openxmlformats.org namespaces) WordprocessingML part
+     with typical Word extension markup plus two genuine schema violations.
+     Expected with conformance=auto and mce-preprocessing=yes:
+       flavor=transitional, exactly 2 errors (w:shd order, empty w:rsidR);
+       mc:Ignorable, w14:paraId, the w15 element and both AlternateContents
+       must not produce errors. -->
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"
+            xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml"
+            xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape"
+            xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup"
+            mc:Ignorable="w14 w15 wpg">
+  <w:body>
+
+    <!-- valid: w:shd precedes w:spacing -->
+    <w:p>
+      <w:pPr>
+        <w:shd w:val="clear" w:fill="FF0000"/>
+        <w:spacing w:before="100"/>
+      </w:pPr>
+      <w:r><w:t>valid paragraph</w:t></w:r>
+    </w:p>
+
+    <!-- genuine error: w:shd after w:spacing -->
+    <w:p>
+      <w:pPr>
+        <w:spacing w:before="100"/>
+        <w:shd w:val="clear"/>
+      </w:pPr>
+      <w:r><w:t>shd too late</w:t></w:r>
+    </w:p>
+
+    <!-- genuine error: empty w:rsidR -->
+    <w:p w:rsidR=""><w:r><w:t>empty rsid</w:t></w:r></w:p>
+
+    <!-- ignorable extension attribute and element: must be stripped -->
+    <w:p w14:paraId="1A2B3C4D"><w:r><w:t>ext attribute</w:t></w:r></w:p>
+    <w15:custom/>
+
+    <!-- AlternateContent resolved to mc:Choice (wps is understood) -->
+    <mc:AlternateContent>
+      <mc:Choice Requires="wps">
+        <w:p><w:r><w:t>choice branch</w:t></w:r></w:p>
+      </mc:Choice>
+      <mc:Fallback>
+        <w:p><w:r><w:t>fallback branch</w:t></w:r></w:p>
+      </mc:Fallback>
+    </mc:AlternateContent>
+
+    <!-- AlternateContent resolved to mc:Fallback (wpg is ignorable, hence not understood) -->
+    <mc:AlternateContent>
+      <mc:Choice Requires="wpg">
+        <w:p><w:r><w:t>unwanted branch</w:t></w:r></w:p>
+      </mc:Choice>
+      <mc:Fallback>
+        <w:p><w:r><w:t>fallback branch</w:t></w:r></w:p>
+      </mc:Fallback>
+    </mc:AlternateContent>
+
+    <w:sectPr/>
+  </w:body>
+</w:document>

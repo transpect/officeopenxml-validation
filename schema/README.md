@@ -1,6 +1,11 @@
 Source of the RNC files: https://www.ecma-international.org/publications/standards/Ecma-376.htm
 Converted to rng with 'trang' (version from 2009/11).
 
+strict/: ISO/IEC 29500 strict flavor, from OfficeOpenXML-RELAXNG-Strict.zip
+(ECMA-376 5th edition, part 1), converted with the same trang version.
+The files directly in this directory are the transitional flavor
+(OfficeOpenXML-RELAXNG-Transitional.zip, ECMA-376 5th edition, part 4).
+
 COPYRIGHT NOTICE
 ©2019 Ecma International
 This document may be copied, published and distributed to others, and certain derivative works of it may be prepared, copied, published, and distributed, in whole or in part, provided that the above copyright notice and this Copyright License and Disclaimer are included on all such copies and derivative works. The only derivative works that are permissible under this Copyright License and Disclaimer are:

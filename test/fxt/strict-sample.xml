@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Strict (purl.oclc.org namespaces) WordprocessingML part.
+     Expected with conformance=auto: flavor=strict, validation against
+     schema/strict/WordprocessingML_Main_Document.rng, no errors. -->
+<w:document xmlns:w="http://purl.oclc.org/ooxml/wordprocessingml/main">
+  <w:body>
+    <w:p>
+      <w:pPr>
+        <w:shd w:val="clear" w:fill="FF0000"/>
+        <w:spacing w:before="100"/>
+      </w:pPr>
+      <w:r><w:t>valid strict paragraph</w:t></w:r>
+    </w:p>
+    <w:sectPr/>
+  </w:body>
+</w:document>

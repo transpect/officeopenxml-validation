@@ -20,6 +20,18 @@
     - docProps/app.xml
     - docProps/core.xml
     - docProps/custom.xml
+
+    Schema flavor:
+    - Strict and transitional ISO/IEC 29500 parts are distinguished
+      automatically by the root element namespace of each part
+      (http://purl.oclc.org/ooxml/... = strict,
+      http://schemas.openxmlformats.org/... = transitional).
+      Option 'conformance' (auto|strict|transitional) overrides detection.
+    - Before RelaxNG validation, Markup Compatibility preprocessing
+      (ECMA-376 Part 3) removes content in mc:Ignorable namespaces and
+      resolves mc:AlternateContent, mirroring what conforming consumers
+      (such as Word) must ignore. Option 'mce-preprocessing' (yes|no)
+      switches this off for the previous, raw-validation behavior.
   -->
 
   <p:option name="file" required="true"/>
@@ -27,6 +39,8 @@
   <p:option name="debug" select="'no'"/>
   <p:option name="report-family-prefix" select="'docx'"/>
   <p:option name="projectspecific-exclusion_regex" select="''"/>
+  <p:option name="conformance" select="'auto'"/>
+  <p:option name="mce-preprocessing" select="'yes'"/>
 
   <p:output port="result" primary="true">
     <p:pipe step="val-component-wrapper" port="result"/>
@@ -125,13 +139,44 @@
       <p:with-option name="href" select="/*/@abs-file-path"/>
     </p:load>
 
+    <p:xslt name="schema-selection">
+      <p:input port="source">
+        <p:pipe step="load" port="result"/>
+      </p:input>
+      <p:input port="stylesheet">
+        <p:document href="../xsl/schema-selection.xsl"/>
+      </p:input>
+      <p:with-param name="conformance" select="$conformance"/>
+      <p:with-param name="rng-name" select="normalize-space(/c:result)">
+        <p:pipe step="rng-selection" port="result"/>
+      </p:with-param>
+      <p:with-param name="abs-file-path" select="xs:string(/c:result/@abs-file-path)">
+        <p:pipe step="rng-selection" port="result"/>
+      </p:with-param>
+      <p:input port="parameters"><p:empty/></p:input>
+    </p:xslt>
+
+    <p:xslt name="mce-normalize">
+      <p:input port="source">
+        <p:pipe step="load" port="result"/>
+      </p:input>
+      <p:input port="stylesheet">
+        <p:document href="../xsl/mce-normalize.xsl"/>
+      </p:input>
+      <p:with-param name="active" select="$mce-preprocessing"/>
+      <p:with-param name="abs-file-path" select="xs:string(/c:result/@abs-file-path)">
+        <p:pipe step="rng-selection" port="result"/>
+      </p:with-param>
+      <p:input port="parameters"><p:empty/></p:input>
+    </p:xslt>
+
     <tr:validate-with-rng-sch name="val-component">
       <p:with-option name="rngfile" 
         select="resolve-uri(
-                  concat('../schema/', /c:result), 
+                  concat('../schema/', normalize-space(/c:result)),
                   static-base-uri()
                 )">
-        <p:pipe step="rng-selection" port="result"/>
+        <p:pipe step="schema-selection" port="result"/>
       </p:with-option>
       <p:with-option name="info-messages" select="'true'" />
     </tr:validate-with-rng-sch>
@@ -149,13 +194,17 @@
           <xsl:param name="debug"/>
           <xsl:param name="report-family-prefix"/>
           <xsl:param name="projectspecific-exclusion_regex" select="''"/>
+          <xsl:param name="conformance" select="'auto'"/>
+          <xsl:param name="mce-preprocessing" select="'yes'"/>
           <xsl:template match="c:results">
             <xsl:variable name="container-file" select="tokenize($base-uri, '/')[last()]"/>
             <xsl:variable name="single-reports">
               <xsl:apply-templates/>
             </xsl:variable>
             <svrl:schematron-output title="Office Open XML Validation" schemaVersion="" tr:step-name="wml-rng-check"
-        tr:rule-family="{$report-family-prefix} Validation">
+        tr:rule-family="{$report-family-prefix} Validation" tr:conformance="{$conformance}"
+        tr:mce-preprocessing="{$mce-preprocessing}"
+        tr:created="{format-dateTime(current-dateTime(), '[Y0001]-[M01]-[D01]T[H01]:[m01]:[s01][Z]')}">
               <svrl:active-pattern id="contentchecker_results" name="contentchecker_results"/>
               <svrl:fired-rule context="*[@srcpath]"/>
               <xsl:if test="not($single-reports/*)">
@@ -212,6 +261,8 @@
     <p:with-param name="debug" select="$debug"/>
     <p:with-param name="report-family-prefix" select="$report-family-prefix"/>
     <p:with-param name="projectspecific-exclusion_regex" select="$projectspecific-exclusion_regex"/>
+    <p:with-param name="conformance" select="$conformance"/>
+    <p:with-param name="mce-preprocessing" select="$mce-preprocessing"/>
     <p:input port="parameters"><p:empty/></p:input>
   </p:xslt>
 
